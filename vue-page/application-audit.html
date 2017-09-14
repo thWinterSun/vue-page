@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<head>
+	
+</head>
+<html>
+
+<body>
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="row">
+				<div class="col-lg-12">
+					<ol class="breadcrumb">
+						<li>
+							<a href="#">
+								
+							</a>
+						</li>
+						<li class="active">
+							<span>
+                                	
+                            </span>
+						</li>
+					</ol>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="main-box clearfix" style="min-height: 700px;">
+						<div class="tabs-wrapper tabs-no-header" id="nav_tabs">
+							<ul class="nav nav-tabs" >
+                                <li v-for="tab in tabs" :class="{active:tab.selected}" @click="changeTab($event)" >
+                                    <a :id="tab.tId" :href="tab.href" data-toggle="tab" v-text="tab.name"></a>
+                                </li>
+                            </ul>
+							<div class="tab-content">
+								
+								<div class="tab-pane fade" id="tab-other">
+									
+									<div class="table-responsive">
+										<table id="other_log" class="table table-bordered  table-hover td_overhide">
+											<thead>
+												<tr class="info">
+													<th style="width:12%;">
+														日期
+													</th>
+													<th style="width:10%;">
+														<span>
+                                                    		用户IP
+                                                        </span>
+													</th>
+													<th style="width:10%;">
+														<span>
+                                                           	应用名称
+                                                        </span>
+													</th>
+													<th style="width:10%;">
+														<span>
+                                                           	行为
+                                                        </span>
+													</th>
+													<th style="width:10%;">
+														<span>
+                                                           	应用分类
+                                                        </span>
+													</th>
+													
+												</tr>
+											</thead>
+											<tbody>
+												<tr v-for="arr in otherData">
+													<td v-text="arr.date"></td>
+													<td v-text="arr.sip"></td>
+													<td v-text="arr.appid"></td>
+													<td v-text="arr.action"></td>
+													<td v-text="arr.mod"></td>
+												</tr>
+											</tbody>
+										</table>
+										<page :total="pageTotal" :plength="pageLength" @page-msg="emitData" @change-index = "indexChange"></page>
+										
+									</div>
+									
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<template id="pageCon">
+    	<div class="pageContainer">
+			<a href="javascript:void(0)" class="disenable" @click="activeLess" v-show="activeIndex != 1"><i class="fa fa-angle-left"></i></a>
+			<a href="javascript:void(0)" v-for="its in pageArr" @click="sendIndex($event)" v-text="its" :class="{current:activeIndex == its}"></a>
+			<a href="javascript:void(0)" @click="activeAdd" v-show="plength != activeIndex && plength != 0 && plength>showItem"><i class="fa fa-angle-right"></i></a>
+			<select class="pageSizeSel" @change="selectChange" v-model="sizeSelect">
+				<option v-for="size in sizeSelects" :value="size.value" v-text="size.text"></option>
+			</select>
+			<span class="text"> &nbsp;共{{total}}条/{{plength}}页</span>
+			<div style="clear:both;"></div>
+		</div>
+		
+    </template>
+    
+	<script>
+		Vue.component("page",{
+			template:"#pageCon",
+			props:['total','plength'],
+			data:function(){
+				return{
+					activeIndex:1,
+					sizeSelect:10,
+					showItem:5,
+					sizeSelects:[
+						{
+							"text":"10条/页",
+							"value":10
+						},
+						{
+							"text":"20条/页",
+							"value":20
+						},
+						{
+							"text":"30条/页",
+							"value":30
+						},
+						{
+							"text":"40条/页",
+							"value":40
+						},
+						{
+							"text":"50条/页",
+							"value":50
+						},
+					]
+				}
+			},
+			methods:{
+				selectChange:function(){
+					this.$emit("page-msg",this.sizeSelect);
+					this.activeIndex = 1;
+					console.log("传给父组件"+this.sizeSelect);
+				},
+				activeAdd:function(){
+					if(this.activeIndex<this.plength-4){
+						this.activeIndex++;
+						this.$emit("change-index",this.activeIndex);
+						console.log("传给父组件"+this.activeIndex);
+					}
+				},
+				activeLess:function(){
+					if(this.activeIndex>1){
+						this.activeIndex--;
+						this.$emit("change-index",this.activeIndex);
+					}
+				},
+				sendIndex:function(ev){
+					console.log(ev.target.text);
+					this.activeIndex = Number(ev.target.text);
+					//this.$emit("change-index",Number(ev.target.text));
+					this.$emit("change-index",this.activeIndex);
+				}
+			},
+			computed:{
+				pageArr:function(){
+					var pages = [];
+					if( this.activeIndex < this.showItem ){ //如果当前的激活的项 小于要显示的条数
+		               //总页数和要显示的条数那个大就显示多少条
+		               	var i = Math.min(this.showItem,this.plength);
+		               	while(i){
+		                   	pages.unshift(i--);
+		               	}
+		           	}else{ //当前页数大于显示页数了
+		               	var middle = this.activeIndex - Math.floor(this.showItem / 2 ),//从哪里开始
+		                   	i = this.showItem;
+		               	if( middle >  (this.plength - this.showItem)  ){
+		                   	middle = (this.plength - this.showItem) + 1
+		               	}
+		               	while(i--){
+		                   	pages.push( middle++ );
+		               	}
+		           	}	
+					return pages
+				}
+			}
+			
+				
+		});
+
+		var auditVm = new Vue({
+			el:"#nav_tabs",
+			data:{
+				tabs:[
+					{
+						"href":"#tab-web",
+						"name":"网站访问",
+						"selected":true,
+						"tId":"get_audit_web"
+					},
+				],
+				activeTab:"get_audit_web",
+				webData:[],
+				webSelect:"custom",
+				dataFirst:1,
+				dataLength:10,
+				pageTotal:"",
+			},
+			methods:{
+				getHttpData:function(Strdata){
+					this.$http({
+						url:'/data/',
+						timeout:5000,
+						data:JSON.stringify(Strdata),
+						method:'POST',
+						emulateJSON:true,
+					}).then(function(res){
+						var modular = res.data.head.function;
+						this.pageTotal = res.data.head.total;
+						if(modular === "get_audit_web"){
+							if(res.data.head.error_code === 0) {
+								this.setWebData(res.data);
+							}else{
+								alert(res.data[0].head.error_string);
+							}
+						}
+						
+						
+					});
+				},
+				changeTab:function(ev){
+					this.activeTab = ev.target.id;
+					this.getHttpData(this.get_audit_web);
+					console.log(ev.target.id);
+				},
+				setWebData:function(dataObj){
+					this.webData = dataObj.data;
+					
+				},
+				webChange:function(){
+					this.getHttpData(this.get_audit_web);
+				},
+				seachData:function(){
+					this.getHttpData(this.get_audit_web);
+					$(".md-close").trigger("click");
+					this.webSip = '';
+					this.webDip = '';
+				},
+				emitData:function(msg){
+					console.log('接收组件数据'+msg);
+					this.dataLength = msg;
+				},
+				indexChange:function(index){
+					console.log('接收组件数据'+index);
+					this.dataFirst = index;
+				},
+				
+			},
+			computed:{
+				pageLength:function(){
+					return Math.ceil(this.pageTotal/this.dataLength)
+				}
+			},
+			mounted:function() {
+		      	$(".search_datetime").datetimepicker({
+					format:'yyyy-mm-dd hh:ii:ss',
+				    language:'fr',
+				    weekStart: 1,
+				    todayBtn:  0, 
+				    autoclose: 1,
+				    todayHighlight: 1,
+				    startView: 1,
+				    forceParse: 0
+		      	}).on("hide",() => {
+		     			this.webStartTime = $('#datepicker1').val(),
+		     			this.webEndTime =  $('#datepicker2').val()
+		     		}
+				);
+				
+		    },
+		    watch:{
+		    	dataLength:function(){
+					this.webChange();
+		    	},
+		    	dataFirst:function(){
+					this.webChange();
+		    	}
+		    	
+		    }
+		});
+
+		auditVm.webChange();
+
+	</script>
+	
+</body>
+
+</html>
