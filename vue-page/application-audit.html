@@ -2,95 +2,90 @@
 <head></head>
 <html>
 <body>
-	
-	<page :total="pageTotal" :plength="pageLength" @page-msg="emitData" @change-index = "indexChange"></page>
-									
-	<template id="pageCon">
-    	<div class="pageContainer">
-			<a href="javascript:void(0)" class="disenable" @click="activeLess" v-show="activeIndex != 1"><i class="fa fa-angle-left"></i></a>
-			<a href="javascript:void(0)" v-for="its in pageArr" @click="sendIndex($event)" v-text="its" :class="{current:activeIndex == its}"></a>
-			<a href="javascript:void(0)" @click="activeAdd" v-show="plength != activeIndex && plength != 0 && plength>showItem"><i class="fa fa-angle-right"></i></a>
-			<select class="pageSizeSel" @change="selectChange" v-model="sizeSelect">
-				<option v-for="size in sizeSelects" :value="size.value" v-text="size.text"></option>
-			</select>
-			<span class="text"> &nbsp;共{{total}}条/{{plength}}页</span>
-			<div style="clear:both;"></div>
-		</div>
-		
+    <page :total="pageTotal" :plength="pageLength" @page-msg="emitData" @change-index = "indexChange"></page>									
+    <template id="pageCon">
+        <div class="pageContainer">
+	    <a href="javascript:void(0)" class="disenable" @click="activeLess" v-show="activeIndex != 1"><i class="fa fa-angle-left"></i></a>
+	    <a href="javascript:void(0)" v-for="its in pageArr" @click="sendIndex($event)" v-text="its" :class="{current:activeIndex == its}"></a>
+	    <a href="javascript:void(0)" @click="activeAdd" v-show="plength != activeIndex && plength != 0 && plength>showItem"><i class="fa fa-angle-right"></i></a>
+	    <select class="pageSizeSel" @change="selectChange" v-model="sizeSelect">
+	        <option v-for="size in sizeSelects" :value="size.value" v-text="size.text"></option>
+	    </select>
+	    <span class="text"> &nbsp;共{{total}}条/{{plength}}页</span>
+	    <div style="clear:both;"></div>
+	</div>
     </template>
-    
-	<script>
-		Vue.component("page",{
-			template:"#pageCon",
-			props:['total','plength'],
-			data:function(){
-				return{
-					activeIndex:1,
-					sizeSelect:10,
-					showItem:5,
-					sizeSelects:[
-						{
-							"text":"10条/页",
-							"value":10
-						},
-						{
-							"text":"20条/页",
-							"value":20
-						}
-						
-					]
-				}
+    <script>
+        Vue.component("page",{
+	    template:"#pageCon",
+	    props:['total','plength'],
+	    data:function(){
+	        return{
+		    activeIndex:1,
+		    sizeSelect:10,
+		    showItem:5,
+		    sizeSelects:[
+		        {
+			    "text":"10条/页",
+			    "value":10
 			},
-			methods:{
-				selectChange:function(){
-					this.$emit("page-msg",this.sizeSelect);
-					this.activeIndex = 1;
-					console.log("传给父组件"+this.sizeSelect);
-				},
-				activeAdd:function(){
-					if(this.activeIndex<this.plength-4){
-						this.activeIndex++;
-						this.$emit("change-index",this.activeIndex);
-						console.log("传给父组件"+this.activeIndex);
-					}
-				},
-				activeLess:function(){
-					if(this.activeIndex>1){
-						this.activeIndex--;
-						this.$emit("change-index",this.activeIndex);
-					}
-				},
-				sendIndex:function(ev){
-					console.log(ev.target.text);
-					this.activeIndex = Number(ev.target.text);
-					//this.$emit("change-index",Number(ev.target.text));
-					this.$emit("change-index",this.activeIndex);
-				}
-			},
-			computed:{
-				pageArr:function(){
-					var pages = [];
-					if( this.activeIndex < this.showItem ){ //如果当前的激活的页小于要显示的页数
-		               	var i = Math.min(this.showItem,this.plength);
-		               	while(i){
-		                   	pages.unshift(i--);
-		               	}
-		           	}else{
-		               	var middle = this.activeIndex - Math.floor(this.showItem / 2 ),
-		                   	i = this.showItem;
-		               	if( middle >  (this.plength - this.showItem)  ){
-		                   	middle = (this.plength - this.showItem) + 1
-		               	}
-		               	while(i--){
-		                   	pages.push( middle++ );
-		               	}
-		           	}	
-					return pages
-				}
+			{
+			    "text":"20条/页",
+			    "value":20
 			}
+						
+		    ]
+		}
+	    },
+	    methods:{
+	        selectChange:function(){
+		    this.$emit("page-msg",this.sizeSelect);
+		    this.activeIndex = 1;
+		    console.log("传给父组件"+this.sizeSelect);
+		},
+		activeAdd:function(){
+		    if(this.activeIndex<this.plength-4){
+		        this.activeIndex++;
+			this.$emit("change-index",this.activeIndex);
+			console.log("传给父组件"+this.activeIndex);
+		    }
+		},
+		activeLess:function(){
+		    if(this.activeIndex>1){
+		        this.activeIndex--;
+			this.$emit("change-index",this.activeIndex);
+		    }
+		},
+		sendIndex:function(ev){
+		    console.log(ev.target.text);
+		    this.activeIndex = Number(ev.target.text);
+		    this.$emit("change-index",this.activeIndex);
+		}
+	    },
+	    computed:{
+	        pageArr:function(){
+		    var pages = [];
+		    if( this.activeIndex < this.showItem ){ //如果当前的激活的页小于要显示的页数
+		        var i = Math.min(this.showItem,this.plength);
+		        while(i){
+			    pages.unshift(i--);
+		        }
+		    }else{
+		        var middle = this.activeIndex - Math.floor(this.showItem / 2 ),
+			    i = this.showItem;
+		        if( middle >  (this.plength - this.showItem)  ){
+			    middle = (this.plength - this.showItem) + 1
+		        }
+		        while(i--){
+			    pages.push( middle++ );
+		        }
+		    }	
+		    return pages
+	        }
+	    }
 			
 				
-		});
+	});
 
 		var auditVm = new Vue({
 			el:"#nav_tabs",
@@ -164,7 +159,7 @@
 			},
 			mounted:function() {
 		      	$(".search_datetime").datetimepicker({
-					format:'yyyy-mm-dd hh:ii:ss',
+				format:'yyyy-mm-dd hh:ii:ss',
 				    language:'fr',
 				    weekStart: 1,
 				    todayBtn:  0, 
