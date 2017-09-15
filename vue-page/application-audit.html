@@ -87,105 +87,99 @@
 				
 	});
 
-		var auditVm = new Vue({
-			el:"#nav_tabs",
-			data:{
-				tabs:[
-					{
-						"href":"#tab-web",
-						"name":"网站访问",
-						"selected":true,
-						"tId":"get_audit_web"
-					},
-				],
-				activeTab:"get_audit_web",
-				webData:[],
-				dataFirst:1,
-				dataLength:10,
-				pageTotal:"",
-			},
-			methods:{
-				getHttpData:function(Strdata){
-					this.$http({
-						url:'/data/',
-						timeout:5000,
-						data:JSON.stringify(Strdata),
-						method:'POST',
-						emulateJSON:true,
-					}).then(function(res){
-						var modular = res.data.head.function;
-						this.pageTotal = res.data.head.total;
-						if(modular === "get_audit_web"){
-							if(res.data.head.error_code === 0) {
-								this.setWebData(res.data);
-							}else{
-								alert(res.data[0].head.error_string);
-							}
-						}
-						
-						
-					});
-				},
-				changeTab:function(ev){
-					this.activeTab = ev.target.id;
-					this.getHttpData(this.get_audit_web);
-					console.log(ev.target.id);
-				},
-				setWebData:function(dataObj){
-					this.webData = dataObj.data;
-				},
-				webChange:function(){
-					this.getHttpData(this.get_audit_web);
-				},
-				seachData:function(){
-					this.getHttpData(this.get_audit_web);
-					this.webSip = '';
-					this.webDip = '';
-				},
-				emitData:function(msg){
-					console.log('接收组件数据'+msg);
-					this.dataLength = msg;
-				},
-				indexChange:function(index){
-					console.log('接收组件数据'+index);
-					this.dataFirst = index;
-				},
-				
-			},
-			computed:{
-				pageLength:function(){
-					return Math.ceil(this.pageTotal/this.dataLength)
-				}
-			},
-			mounted:function() {
-		      	$(".search_datetime").datetimepicker({
-				format:'yyyy-mm-dd hh:ii:ss',
-				    language:'fr',
-				    weekStart: 1,
-				    todayBtn:  0, 
-				    autoclose: 1,
-				    todayHighlight: 1,
-				    startView: 1,
-				    forceParse: 0
-		      	}).on("hide",() => {
-		     			this.webStartTime = $('#datepicker1').val(),
-		     			this.webEndTime =  $('#datepicker2').val()
-		     		}
-				);
-				
-		    },
-		    watch:{
-		    	dataLength:function(){
-					this.webChange();
-		    	},
-		    	dataFirst:function(){
-					this.webChange();
-		    	}
-		    	
+    var auditVm = new Vue({
+        el:"#nav_tabs",
+	data:{
+	    tabs:[{
+	        "href":"#tab-web",
+		"name":"网站访问",
+		"selected":true,
+		"tId":"get_audit_web"
+	    }],
+	    activeTab:"get_audit_web",
+	    webData:[],
+	    dataFirst:1,
+	    dataLength:10,
+	    pageTotal:"",
+	},
+	methods:{
+	    getHttpData:function(Strdata){
+	        this.$http({
+		    url:'/data/',
+		    timeout:3000,
+		    data:JSON.stringify(Strdata),
+		    method:'POST',
+		    emulateJSON:true,
+		}).then(function(res){
+		    var modular = res.data.head.function;
+		    this.pageTotal = res.data.head.total;
+		    if(modular === "get_audit_web"){
+		        if(res.data.head.error_code === 0) {
+			    this.setWebData(res.data);
+			}else{
+			    alert(res.data[0].head.error_string);
+			}
 		    }
 		});
+	    },
+	    changeTab:function(ev){
+	        this.activeTab = ev.target.id;
+		this.getHttpData(this.get_audit_web);
+		console.log(ev.target.id);
+	    },
+	    setWebData:function(dataObj){
+		this.webData = dataObj.data;
+	    },
+	    webChange:function(){
+		this.getHttpData(this.get_audit_web);
+	    },
+	    seachData:function(){
+	        this.getHttpData(this.get_audit_web);
+		this.webSip = '';
+		this.webDip = '';
+	    },
+	    emitData:function(msg){
+		console.log('接收组件数据'+msg);
+		this.dataLength = msg;
+	    },
+	    indexChange:function(index){
+		console.log('接收组件数据'+index);
+		this.dataFirst = index;
+	    },
+	},
+	computed:{
+	    pageLength:function(){
+	        return Math.ceil(this.pageTotal/this.dataLength)
+	    }
+	},
+	mounted:function() {
+            $(".search_datetime").datetimepicker({
+	        format:'yyyy-mm-dd hh:ii:ss',
+		language:'fr',
+		weekStart: 1,
+		todayBtn:  0, 
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 1,
+		forceParse: 0
+	    }).on("hide",() => {
+		this.webStartTime = $('#datepicker1').val(),
+		this.webEndTime =  $('#datepicker2').val()
+	    });
+				
+        },
+        watch:{
+	    dataLength:function(){
+	        this.webChange();
+	    },
+	    dataFirst:function(){
+		this.webChange();
+	    }
+		    	
+        }
+    });
 
-		auditVm.webChange();
+	    auditVm.webChange();
 
 	</script>
 	
