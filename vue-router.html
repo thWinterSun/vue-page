@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+<body>
+<div id="app">
+	<!-- 定义导航 -->
+	<router-link to="/home">首页</router-link>
+	<router-link to="/setting">设置</router-link>
+	<router-link to="/nat">NAT</router-link>
+
+	<!-- 设置内容显示部分 -->
+	<router-view></router-view>
+</div>
+<template id="homePage">
+	<div>
+		<h3>这里是首页的内容</h3>
+	</div>
+</template>
+
+<template id="setPage">
+	<div>
+		<h3>设置页面内容</h3>
+	</div>
+</template>
+<template id="natPage">
+	<div>
+		<h2>这里是NAT</h2>
+	</div>
+</template>
+<script type="text/javascript" src="../js/vue.js"></script>
+<script type="text/javascript" src="../js/vue-router.min.js"></script>
+<script type="text/javascript">
+	//定义路由组件
+
+	const Home = {
+		template:'#homePage'
+	}
+
+	const Set ={
+		template:'#setPage'
+	}
+
+	const Nat = {
+		template:'#natPage'
+	}
+
+
+	//定义路由，每一个路由映射一个组件
+
+	const route = [
+		{path:'/home',component:Home},
+		{path:'/setting',component:Set},
+		{path:'/nat',component:Nat},
+
+	]
+
+
+
+	//创建router实例，然后传入route配置
+
+	const router = new VueRouter({
+		routes:route
+	})
+
+	//挂载到根实例
+	const app = new Vue({
+		router
+	}).$mount("#app")
+</script>
+
+</body>
+</html>
