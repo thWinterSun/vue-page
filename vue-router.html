@@ -30,8 +30,8 @@
 		<h2>这里是NAT</h2>
 	</div>
 </template>
-<script type="text/javascript" src="../js/vue.js"></script>
-<script type="text/javascript" src="../js/vue-router.min.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/vue-router/2.7.0/vue-router.min.js"></script>
 <script type="text/javascript">
 	//定义路由组件
 
@@ -54,6 +54,7 @@
 		{path:'/home',component:Home},
 		{path:'/setting',component:Set},
 		{path:'/nat',component:Nat},
+		//{path:'*',redirect:'/home'}
 
 	]
 
